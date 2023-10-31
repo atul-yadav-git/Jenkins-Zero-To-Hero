@@ -6,12 +6,12 @@ pipeline {
     }
   }
   stages {
-    stage('Checkout') {
-      steps {
-        sh 'echo passed'
-        git branch: 'main', url: 'https://github.com/atul-yadav-git/Jenkins-Zero-To-Hero.git'
-      }
-    }
+    //stage('Checkout') {
+     // steps {
+       // sh 'echo passed'
+        //git branch: 'main', url: 'https://github.com/atul-yadav-git/Jenkins-Zero-To-Hero.git'
+      //}
+    //}
     stage('Build and Test') {
       steps {
         sh 'ls -ltr'
@@ -47,7 +47,7 @@ pipeline {
     }
     stage('Update Deployment File') {
         environment {
-            GIT_REPO_NAME = "Jenkins-Zero-To-Hero"
+            GIT_REPO_NAME = "manifest-deployment-repo"
             GIT_USER_NAME = "atul-yadav-git"
         }
         steps {
