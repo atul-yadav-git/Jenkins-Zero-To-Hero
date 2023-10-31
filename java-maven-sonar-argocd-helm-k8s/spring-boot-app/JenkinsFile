@@ -54,7 +54,7 @@ pipeline {
             withCredentials([string(credentialsId: 'github-credentials', variable: 'GITHUB_TOKEN')]) {
                 script {
                     // Extract the current image tag from the deployment file
-                    CURRENT_IMAGE_TAG=$(cat java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml | grep 'image: atuldockerhub/ultimate-cicd:' | awk -F ': ' '{print $2}' | awk -F ':' '{print $2}')
+                    def CURRENT_IMAGE_TAG = sh(script: 'cat java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml | grep "image: atuldockerhub/ultimate-cicd:" | awk -F \': \' \'{print $2}\' | awk -F \':\' \'{print $2}\'', returnStatus: true, returnStdout: true).trim()
                     echo "Current image tag: ${CURRENT_IMAGE_TAG}"
                 // Get the latest image tag
                     def NEW_IMAGE_TAG = sh(script: 'echo $BUILD_NUMBER', returnStdout: true).trim()
