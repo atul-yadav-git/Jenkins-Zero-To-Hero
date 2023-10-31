@@ -53,13 +53,18 @@ pipeline {
         steps {
             withCredentials([string(credentialsId: 'github-credentials', variable: 'GITHUB_TOKEN')]) {
                 script {
-                    // Extract the current image tag from the deployment file
-                    def CURRENT_IMAGE_TAG = sh(script: "cat java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml | grep 'image: atuldockerhub/ultimate-cicd:' | awk -F ': ' '{print $2}' | awk -F ':' '{print $2}'", returnStdout: true).trim()
-                    echo "Current image tag: ${CURRENT_IMAGE_TAG}"
-                // Get the latest image tag
-                    def NEW_IMAGE_TAG = sh(script: 'echo $BUILD_NUMBER', returnStdout: true).trim()
-                    echo "New image tag: ${NEW_IMAGE_TAG}"
-                
+                  // Extract the current image tag from the deployment file
+                  def deploymentFile = readFile 'java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml'
+                  def CURRENT_IMAGE_TAG = (deploymentFile =~ /image: atuldockerhub\/ultimate-cicd:(\d+)/)[0][1]
+                  echo "Current image tag: ${CURRENT_IMAGE_TAG}"
+
+                  // Get the latest image tag
+                  def NEW_IMAGE_TAG = sh(script: 'echo $BUILD_NUMBER', returnStdout: true).trim()
+                  echo "New image tag: ${NEW_IMAGE_TAG}"
+
+                  // Replace the current image tag with the latest image tag
+                  def updatedDeploymentFile = deploymentFile.replace("atuldockerhub/ultimate-cicd:${CURRENT_IMAGE_TAG}", "atuldockerhub/ultimate-cicd:${NEW_IMAGE_TAG}")
+                  writeFile file: 'java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml', text: updatedDeploymentFile
                     sh '''
                         git config user.email "103098829+atul-yadav-git@users.noreply.github.com"
                         git config user.name "Atul yadav"
