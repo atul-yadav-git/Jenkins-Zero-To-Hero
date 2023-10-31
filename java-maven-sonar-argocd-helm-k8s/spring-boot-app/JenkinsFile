@@ -68,9 +68,7 @@ pipeline {
                     sh '''
                         git config user.email "103098829+atul-yadav-git@users.noreply.github.com"
                         git config user.name "Atul yadav"
-                        git clean -f -d
-                        # Replace the current image tag with the latest image tag
-                        sed -i "s|atuldockerhub/ultimate-cicd:${CURRENT_IMAGE_TAG}|atuldockerhub/ultimate-cicd:${NEW_IMAGE_TAG}|g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml                    
+                        git clean -f -d                   
                         git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
                         git commit -m "Update deployment image to version ${NEW_IMAGE_TAG}"
                         git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
