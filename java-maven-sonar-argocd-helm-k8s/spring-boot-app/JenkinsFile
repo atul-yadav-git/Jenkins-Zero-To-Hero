@@ -19,16 +19,16 @@ pipeline {
         sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package'
       }
     }
-    stage('Static Code Analysis') {
-      environment {
-        SONAR_URL = "http://54.79.234.50:9000"
-      }
-      steps {
-        withCredentials([string(credentialsId: 'sonarqube-credentials', variable: 'SONAR_AUTH_TOKEN')]) {
-          sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
-        }
-      }
-    }
+    \\stage('Static Code Analysis') {
+      \\environment {
+        \\SONAR_URL = "http://54.79.234.50:9000"
+      \\}
+      \\steps {
+        \\withCredentials([string(credentialsId: 'sonarqube-credentials', variable: 'SONAR_AUTH_TOKEN')]) {
+          \\sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
+        \\}
+      \\}
+    \\}
     stage('Build and Push Docker Image') {
       environment {
         DOCKER_IMAGE = "atuldockerhub/ultimate-cicd:${BUILD_NUMBER}"
@@ -54,7 +54,7 @@ pipeline {
             withCredentials([string(credentialsId: 'github-credentials', variable: 'GITHUB_TOKEN')]) {
                 script {
                     // Extract the current image tag from the deployment file
-                    def CURRENT_IMAGE_TAG = sh(script: 'cat java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml | grep "image: atuldockerhub/ultimate-cicd:" | awk -F \': \' \'{print $2}\' | awk -F \':\' \'{print $2}\'', returnStatus: true, returnStdout: true).trim()
+                    def CURRENT_IMAGE_TAG = sh(script: "cat java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml | grep 'image: atuldockerhub/ultimate-cicd:' | awk -F ': ' '{print $2}' | awk -F ':' '{print $2}'", returnStdout: true).trim()
                     echo "Current image tag: ${CURRENT_IMAGE_TAG}"
                 // Get the latest image tag
                     def NEW_IMAGE_TAG = sh(script: 'echo $BUILD_NUMBER', returnStdout: true).trim()
