@@ -6,7 +6,7 @@ pipeline {
     }
   }
   stages {
-    //stage('Checkout') {
+    //stage('Checkout application source code repo') {
      // steps {
        // sh 'echo passed'
         //git branch: 'main', url: 'https://github.com/atul-yadav-git/Jenkins-Zero-To-Hero.git'
@@ -43,6 +43,11 @@ pipeline {
                 //dockerImage.push()
            // }
         }
+      }
+    }
+    stage('Checkout deployment manifest') {
+      steps {
+        git branch: 'main', url: 'https://github.com/atul-yadav-git/manifest-deployment-repo.git'
       }
     }
     stage('Update Deployment File') {
