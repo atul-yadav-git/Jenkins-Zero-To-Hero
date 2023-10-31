@@ -53,13 +53,17 @@ pipeline {
         steps {
             withCredentials([string(credentialsId: 'github-credentials', variable: 'GITHUB_TOKEN')]) {
                 script {
+                    // Extract the current image tag from the deployment file
+                    def currentImageTag = sh(script: "grep 'image: atuldockerhub/ultimate-cicd:' java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml | awk -F '[: ]' '{print $4}'", returnStdout: true).trim()
+                // Get the latest image tag
                     def IMAGE_TAG = sh(script: 'echo $BUILD_NUMBER', returnStdout: true).trim()
+                
                     sh '''
                         git config user.email "103098829+atul-yadav-git@users.noreply.github.com"
                         git config user.name "Atul yadav"
                         git clean -f -d
-                        BUILD_NUMBER=${BUILD_NUMBER}
-                        sed -i "s|atuldockerhub/ultimate-cicd:{{IMAGE_TAG}}|atuldockerhub/ultimate-cicd:${IMAGE_TAG}|g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
+                        # Replace the current image tag with the latest image tag
+                        sed -i "s|atuldockerhub/ultimate-cicd:${currentImageTag}|atuldockerhub/ultimate-cicd:${IMAGE_TAG}|g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml                    
                         git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
                         git commit -m "Update deployment image to version ${IMAGE_TAG}"
                         git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
