@@ -54,29 +54,29 @@ pipeline {
             withCredentials([string(credentialsId: 'github-credentials', variable: 'GITHUB_TOKEN')]) {
                 script {
                   // Read the deployment file
-                      def deployment = readYaml file: 'deployment.yml'
+                  def deployment = readYaml file: 'java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml'
 
-                    // Get the current image
-                      def currentImage = deployment['spec']['template']['spec']['containers'][0]['image']
+                // Get the current image
+                  def currentImage = deployment['spec']['template']['spec']['containers'][0]['image']
 
-                    // Extract the current tag
-                      def currentTag = currentImage.split(':')[-1]
+                // Extract the current tag
+                  def currentTag = currentImage.split(':')[-1]
 
-                    // Replace the current tag with the latest tag
-                      def newImage = currentImage.replace(currentTag, latestImageTag)
+                // Replace the current tag with the latest tag
+                  def newImage = currentImage.replace(currentTag, latestImageTag)
 
-                    // Update the image in the deployment file
-                      deployment['spec']['template']['spec']['containers'][0]['image'] = newImage
+                // Update the image in the deployment file
+                  deployment['spec']['template']['spec']['containers'][0]['image'] = newImage
 
-                    // Write the updated deployment back to the file
-                      writeYaml file: 'deployment.yml', data: deployment
+                // Write the updated deployment back to the file
+                  writeYaml file: 'java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml', data: deployment
 
                     sh '''
                         git config user.email "103098829+atul-yadav-git@users.noreply.github.com"
                         git config user.name "Atul yadav"
                         git clean -f -d                   
                         git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
-                        git commit -m "Update deployment image to version ${NEW_IMAGE_TAG}"
+                        git commit -m "Update deployment image to version ${latestImageTag}"
                         git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
                     '''
                 }
