@@ -77,12 +77,13 @@ pipeline {
                   deployment['spec']['template']['spec']['containers'][0]['image'] = newImage
 
                 // Write the updated deployment back to the file
-                  writeYaml file: 'java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml', data: deployment
+                    sh 'rm java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml'
+                    writeYaml file: 'java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml', data: deployment
 
                     sh '''
                         git config user.email "103098829+atul-yadav-git@users.noreply.github.com"
                         git config user.name "Atul yadav"
-                        git clean -f -d                   
+                       // git clean -f -d                   
                         git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
                         git commit -m "Update deployment image to version ${latestImageTag}"
                         git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
