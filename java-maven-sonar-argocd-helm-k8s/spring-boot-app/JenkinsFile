@@ -68,7 +68,7 @@ pipeline {
                   def currentTag = currentImage.split(':')[-1]
                 
                 //define latest image tag
-                  def latestImageTag = ${BUILD_NUMBER}
+                  def latestImageTag = BUILD_NUMBER
                   
                   // Replace the current tag with the latest tag
                   def newImage = currentImage.replace(currentTag, latestImageTag)
